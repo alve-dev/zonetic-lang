@@ -126,11 +126,13 @@ class Parser:
             else:
                 mut = False
                 
+            start = self.tokens._peek(self.position)._span.start
+                
             self.advance()
             return self.parse_declaration(
                 mut,
                 scope,
-                self.tokens._peek(self.position)._span.start,
+                start,
                 block
             )
         
@@ -157,6 +159,17 @@ class Parser:
         elif self.check(TokenType.KEYWORD_GIVE):
             token = self.tokens._peek(self.position)
             self.advance()
+            
+            if not block:
+                self.diag.emit(
+                    ErrorCode.E2012,
+                    None,
+                    [token._span],
+                    [(token._span, "`give` is not inside a block expression")]
+                )
+                self.synchronize(block)
+                return ErrorNode(Span(0, 0, self.file_map))
+                
             value = self.expression(scope, block)
             return GiveStmt(
                 value,
@@ -177,8 +190,8 @@ class Parser:
             self.diag.emit(
                 ErrorCode.E2011,
                 { "keyword" : token_err._value },
-                token_err._span,
-                (token_err._span, "`if` was expected before this `{keyword}`")
+                [token_err._span],
+                [(token_err._span, "`if` was expected before this `{keyword}`")]
             )
             
             self.synchronize(block)
@@ -215,8 +228,8 @@ class Parser:
             self.diag.emit(
                 ErrorCode.E2010,
                 { "token" : token_err._value },
-                token_err._span,
-                (token_err._span, "this is not a valid way to start a statement")
+                [token_err._span],
+                [(token_err._span, "this is not a valid way to start a statement")]
             )
             
             self.synchronize(block)
@@ -260,8 +273,8 @@ class Parser:
             self.diag.emit(
                 ErrorCode.E2004,
                 { "token" : token._value },
-                Span(start, token._span.end, self.file_map),
-                (token._span, "expected `;` or `,` here to end or continue the declaration")
+                [Span(start, token._span.end, self.file_map)],
+                [(token._span, "expected `;` or `,` here to end or continue the declaration")]
             )
             
             self.synchronize(block)
@@ -292,8 +305,8 @@ class Parser:
                         self.diag.emit(
                             ErrorCode.E2002,
                             { "type" : zon_type._value },
-                            Span(start, current_span.end, self.file_map),
-                            (current_span, "is not a valid type in Zonetic")
+                            [Span(start, current_span.end, self.file_map)],
+                            [(current_span, "is not a valid type in Zonetic")]
                         )
                         
                         self.synchronize(block)
@@ -325,8 +338,8 @@ class Parser:
             self.diag.emit(
                 ErrorCode.E2001,
                 { "name_mut" : name_mut },
-                Span(start, ident._span.end, self.file_map),
-                (ident._span, "an identifier was expected here"),
+                [Span(start, ident._span.end, self.file_map)],
+                [(ident._span, "an identifier was expected here")],
             )
             
             self.synchronize(block)
@@ -375,8 +388,8 @@ class Parser:
                 ErrorCode.E2006,
                 { "token" : token._value ,
                   "name" : name },
-                Span(start, token._span.end, self.file_map),
-                (token._span, "expected an assignment operator here")
+                [Span(start, token._span.end, self.file_map)],
+                [(token._span, "expected an assignment operator here")]
             )
             
             self.synchronize(block)
@@ -403,8 +416,8 @@ class Parser:
                     ErrorCode.E2008,
                     {"aux_l": '}',
                      "aux_r" : '{'},
-                    Span(start, token_eof._span.end-1, self.file_map),
-                    (Span(token_eof._span.end-2, token_eof._span.end-1, self.file_map), "`{aux_l}` was expected here to close the block")
+                    [Span(start, token_eof._span.end-1, self.file_map)],
+                    [(Span(token_eof._span.end-2, token_eof._span.end-1, self.file_map), "`{aux_l}` was expected here to close the block")]
                 )
                 
                 return ErrorNode(Span(0, 0, self.file_map))
@@ -435,8 +448,8 @@ class Parser:
                 self.diag.emit(
                     ErrorCode.W2001,
                     None,
-                    Span(start, give_value.span.end, self.file_map),
-                    (give_value.span, "this `give` is unreachable, no value is expected from this block")
+                    [Span(start, give_value.span.end, self.file_map)],
+                    [(give_value.span, "this `give` is unreachable, no value is expected from this block")]
                 )
             
             return BlockExpr(
@@ -453,8 +466,8 @@ class Parser:
                 self.diag.emit(
                     ErrorCode.E2007,
                     None,
-                    Span(start, end_stmt.span.end, self.file_map),
-                    (end_stmt.span, "`give` with a value was expected here")
+                    [Span(start, end_stmt.span.end, self.file_map)],
+                    [(end_stmt.span, "`give` with a value was expected here")]
                 )
                 
                 self.synchronize(block)
@@ -471,6 +484,7 @@ class Parser:
     def parse_if_form(self, scope_back: Enviroment, expects_value: bool, start: int, block: bool) -> IfForm:
         elif_branches = []
         else_branch = None
+        len_branch = 1
         
         cond = self.expression(scope_back, block)
         
@@ -482,8 +496,8 @@ class Parser:
                 ErrorCode.E2009,
                 { "aux_r" : '{',
                   "token": token._value},
-                Span(start, token._span.end, self.file_map),
-                (token._span, "`{aux_r}` was expected here to open the branch block")
+                [Span(start, token._span.end, self.file_map)],
+                [(token._span, "`{aux_r}` was expected here to open the branch block")]
             )
             
             self.synchronize(block)
@@ -514,8 +528,8 @@ class Parser:
                         ErrorCode.E2009,
                         { "aux_r" : '{',
                         "token": token_err._value},
-                        Span(start, token_err._span.end, self.file_map),
-                        (token_err._span, "`{aux_r}` was expected here to open the branch block")
+                        [Span(start, token_err._span.end, self.file_map)],
+                        [(token_err._span, "`{aux_r}` was expected here to open the branch block")]
                     )
                     
                     self.synchronize(block)
@@ -532,6 +546,8 @@ class Parser:
                         block_expr
                     )
                 )
+                
+                len_branch += 1
             else:
                 break
                 
@@ -548,8 +564,8 @@ class Parser:
                     ErrorCode.E2009,
                     { "aux_r" : '{',
                     "token": token_err._value},
-                    Span(start, token_err._span.end, self.file_map),
-                    (token_err._span, "`{aux_r}` was expected here to open the branch block")
+                    [Span(start, token_err._span.end, self.file_map)],
+                    [(token_err._span, "`{aux_r}` was expected here to open the branch block")]
                 )
                 
                 self.synchronize(block)
@@ -564,19 +580,25 @@ class Parser:
                 Span(token_else._span.start, block_expr.span.end, self.file_map),
                 block_expr
             )
+            len_branch += 1
             
         span_if_form: Span
         if not(else_branch is None):
             span_if_form = Span(start, else_branch.span.end, self.file_map)
-        elif len(elif_branches) > 0:
+        elif not(len(elif_branches) < 1):
             span_if_form = Span(start, elif_branches[-1].span.end, self.file_map)
         else:
             span_if_form = Span(start, if_branch.span.end, self.file_map)
+        
+        
+        if len(elif_branches) < 1:
+            elif_branches = None
         
         return IfForm(
             if_branch,
             elif_branches,
             else_branch,
+            len_branch,
             span_if_form
         )
     
@@ -596,8 +618,8 @@ class Parser:
                 ErrorCode.E2009,
                 { "aux_r" : '{',
                   "token": token._value},
-                Span(start, token._span.end, self.file_map),
-                (token._span, "`{aux_r}` was expected here to open the block")
+                [Span(start, token._span.end, self.file_map)],
+                [(token._span, "`{aux_r}` was expected here to open the block")]
             )
             
             self.synchronize(block)
@@ -892,8 +914,8 @@ class Parser:
                 self.diag.emit(
                     ErrorCode.E2003,
                     None,
-                    Span(span_lparen.start, token._span.end, self.file_map),
-                    (token._span, "`)` was expected here to close the expression")
+                    [Span(span_lparen.start, token._span.end, self.file_map)],
+                    [(token._span, "`)` was expected here to close the expression")]
                 )
                 
                 self.synchronize(block)
@@ -923,7 +945,7 @@ class Parser:
         elif self.check(TokenType.KEYWORD_IF):
             token = self.tokens._peek(self.position)
             self.advance()
-            return self.parse_if_form(scope, True, token._span.start)
+            return self.parse_if_form(scope, True, token._span.start, block)
         
         elif self.check(TokenType.KEYWORD_INPUT):
             in_token = self.tokens._peek(self.position)
@@ -953,8 +975,8 @@ class Parser:
             self.diag.emit(
                 ErrorCode.E2005,
                 { "token" : token._value},
-                token._span,
-                (token._span, "cannot start an expression")
+                [token._span],
+                [(token._span, "cannot start an expression")]
             )
             
             self.synchronize(block)

@@ -1,0 +1,18 @@
+-| calculadora simple |-
+print "\n-- Calculator --"
+mut x = input: int, "First number: "
+mut y = input: int, "Second number: "
+
+mut sum: int = x + y
+mut diff: int = x - y
+mut prod: int = x * y
+
+print "Sum: ", sum
+print "Difference: ", diff
+print "Product: ", prod
+
+if y != 0 {
+    print "Division: ", x / y
+} else {
+    print "Cannot divide by zero"
+}

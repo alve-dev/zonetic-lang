@@ -1,0 +1,24 @@
+-| contador con break |-
+print "\n-- Find First Multiple --"
+mut target = input: int, "Find first multiple of: "
+mut i: int = 1
+mut found: int = 0
+
+infinity {
+    if i % target == 0 {
+        found = i
+        break
+    }
+    i += 1
+    if i > 1000 {
+        break
+    }
+}
+
+if found != 0 {
+    print "First multiple of ", target, " is ", found
+} else {
+    print "No multiple found under 1000"
+}
+
+print "\n=== Done ==="

@@ -5,7 +5,38 @@ Versions are listed from newest to oldest.
 
 ---
 
-## v0.0.9 — *In Progress*
+## v0.1.0 — *The First Release*
+> Tree-walker interpreter complete — first fully functional version of Zonetic
+
+**Interpreter**
+- Full rewrite of the interpreter with visitor pattern
+- `RuntimeScope` and `RuntimeValue` — clean separation from semantic scope
+- All native expressions evaluated — arithmetic, boolean, comparison, unary
+- Short-circuit evaluation for `and` and `or`
+- `if form` as statement and as expression
+- `while form` and `infinity form` with full loop execution
+- `break` and `continue` via signal system (`BreakSignal`, `ContinueSignal`)
+- `give` statement via `GiveSignal` — exits block and returns value
+- Block expressions evaluated in both statement and value context
+- `print` statement — concatenates multiple values without separator
+- `input` statement — reads user input and converts to target type
+- Runtime error system — `ZoneticRuntimeError` bubbles to pipeline entry point
+
+**Runtime Errors**
+- `E4001` — division by zero for `/` and `%`
+
+**Semantic** *(completed this version)*
+- `if form` as expression — type concordance across all branches
+- `else` required when `if form` is used as expression (`E3010`)
+- Return type mismatch across branches (`E3011`)
+- `give` outside block expression (`E2012`)
+- `break` and `continue` outside loop (`E3012`)
+- Condition field type warnings — `W3002`, `W3003`
+- Infinite loop detection without `break` — `W3004`
+
+---
+
+## v0.0.9
 > The Great Refactor Update — language renamed from **Akon** to **Zonetic**
 
 This is the biggest and most important update to date. Nearly everything was rewritten from scratch.

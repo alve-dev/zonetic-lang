@@ -1,3 +1,3 @@
-from .interpreter import Interpreter
+from .interpreter import Interpreter, ZoneticRuntimeError
 
-__all__ = ["Interpreter"]
+__all__ = ["Interpreter", "ZoneticRuntimeError"]

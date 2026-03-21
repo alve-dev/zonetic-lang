@@ -28,6 +28,7 @@ class DiagnosticEngine:
         ErrorCode.E2009 : 0,
         ErrorCode.E2010 : 0,
         ErrorCode.E2011 : 0,
+        ErrorCode.E2012 : 0,
         ErrorCode.W2001 : 0,
         
         ErrorCode.E3001 : 0,
@@ -36,7 +37,19 @@ class DiagnosticEngine:
         ErrorCode.E3004 : 0,
         ErrorCode.E3005 : 0,
         ErrorCode.E3006 : 0,
+        ErrorCode.E3007 : 0,
+        ErrorCode.E3008 : 0,
+        ErrorCode.E3009 : 0,
+        ErrorCode.E3010 : 0,
+        ErrorCode.E3011 : 0,
+        ErrorCode.E3012 : 0,
+        
         ErrorCode.W3001 : 0,
+        ErrorCode.W3002 : 0,
+        ErrorCode.W3003 : 0,
+        ErrorCode.W3004 : 0,
+        
+        ErrorCode.E4001: 0,
     }
 
     
@@ -52,8 +65,8 @@ class DiagnosticEngine:
         self,
         error_code: ErrorCode,
         args: dict[str, str] | None,
-        span_code: Span,
-        span_error: tuple[Span, str | None],
+        span_code: list[Span],
+        span_error: list[tuple[Span, str] | None],
     ) -> None:
         if error_code in ERROR_REGISTRY:
             err_def = ERROR_REGISTRY[error_code]
@@ -69,6 +82,7 @@ class DiagnosticEngine:
             
             if err_def.severity == Severity.ERROR:
                 self.count_errors += 1
+                
             elif err_def.severity == Severity.WARNING:
                 self.count_warnings += 1
                 
@@ -90,7 +104,7 @@ class DiagnosticEngine:
         count_err = 0
         count_warn = 0
         
-        self.errors.sort(key=lambda e: e.span_code.start)
+        self.errors.sort(key=lambda e: e.span_code[0].start)
         
         for diag in self.errors:
             self.ERROR_OCCURRENCE[diag.error_definition.error_code] += 1

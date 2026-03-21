@@ -18,13 +18,15 @@ class IfForm(Node):
     def __init__(
         self,
         if_branch: IfBranch,
-        elif_branches: list[IfBranch],
+        elif_branches: list[IfBranch] | None,
         else_branch: IfBranch | None,
+        len_branch: int,
         span: Span
     ):
         self.if_branch = if_branch
         self.elif_branches = elif_branches
         self.else_branch = else_branch
+        self.len_branch = len_branch
         self.span = span
     
     

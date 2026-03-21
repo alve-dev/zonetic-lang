@@ -1,0 +1,15 @@
+-| clasificador con block expr |-
+print "\n-- Number Classifier --"
+mut num = input: int, "Enter a number: "
+
+inmut classification: string = if num < 0 {
+    give "negative"
+} elif num == 0 {
+    give "zero"
+} elif num % 2 == 0 {
+    give "positive even"
+} else {
+    give "positive odd"
+}
+
+print "The number ", num, " is ", classification

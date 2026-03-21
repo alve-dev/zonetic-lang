@@ -43,4 +43,9 @@ class Enviroment:
             return self.parent.exist(name)
         
         return False
+    
+    def exist_here(self, name: str) -> bool:
+        if name in self.values:
+            return True
+        return False
             

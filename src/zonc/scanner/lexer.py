@@ -126,8 +126,8 @@ class Lexer:
                     self._diagnostic.emit(
                         ErrorCode.E0002,
                         None,
-                        Span(start_position, self._position-1, self._file_map),
-                        (Span(self._position-2, self._position-1, self._file_map), "|-` was expected here to close the comment")
+                        [Span(start_position, self._position-1, self._file_map)],
+                        [(Span(self._position-2, self._position-1, self._file_map), "|-` was expected here to close the comment")]
                     )
             
             case _:
@@ -254,8 +254,8 @@ class Lexer:
     def _scan_bang(self):
         match self._peek(1):
             # TODO: COMMING SOON -> FACTORIAL OPERATOR
-            case '!':
-                pass
+            #case '!':
+            #   pass
             
             case _:
                 self._match_next(
@@ -329,8 +329,8 @@ class Lexer:
             self._diagnostic.emit(
                 ErrorCode.E0001,
                 {"char": char},
-                span,
-                (span, "this character is not recognized by Zonetic")
+                [span],
+                [(span, "this character is not recognized by Zonetic")]
             )
             self._advance(1)
     
@@ -353,8 +353,8 @@ class Lexer:
                         self._diagnostic.emit(
                             ErrorCode.E0005,
                             None,
-                            span,
-                            (span, "this number has too many decimal points")
+                            [span],
+                            [(span, "this number has too many decimal points")]
                         )
                         is_error = True
                     
@@ -461,8 +461,8 @@ class Lexer:
                                     { "quote_used" : start_quotes,
                                       "quote_escape" : "'",
                                       "name_quote_used" : "double" },
-                                    span,
-                                    (span, f"`\\'` here is unnecessary, it has no special meaning in this string")
+                                    [span],
+                                    [(span, f"`\\'` here is unnecessary, it has no special meaning in this string")]
                                 )
                             
                             self._advance(2)
@@ -480,8 +480,8 @@ class Lexer:
                                     { "quotes_used" : start_quotes,
                                       "quotes_escaped" : '"',
                                       "name_quote_used": "single" },
-                                    span,
-                                    (span, f'`\\"` here is unnecessary, it has no special meaning in this string')
+                                    [span],
+                                    [(span, f'`\\"` here is unnecessary, it has no special meaning in this string')]
                                 )
                             
                             self._advance(2)
@@ -493,8 +493,8 @@ class Lexer:
                             self._diagnostic.emit(
                                 ErrorCode.E0003,
                                 { "escape" : f"{char}{self._peek(1)}" },
-                                span,
-                                (span, "this escape sequence is not supported in Zonetic")
+                                [span],
+                                [(span, "this escape sequence is not supported in Zonetic")]
                             )
                             
                             self._advance(2)
@@ -525,8 +525,8 @@ class Lexer:
             self._diagnostic.emit(
                 ErrorCode.E0004,
                 { "quote" : start_quotes },
-                Span(start_position, self._position, self._file_map),
-                (Span(self._position-1, self._position, self._file_map), "`{quote}` was expected here to close the string")
+                [Span(start_position, self._position, self._file_map)],
+                [(Span(self._position-1, self._position, self._file_map), "`{quote}` was expected here to close the string")]
             )
             return
             

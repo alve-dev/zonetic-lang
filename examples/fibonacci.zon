@@ -1,0 +1,16 @@
+print "=== Zonetic v0.1.0 - Full Test ==="
+
+-| fibonacci iterativo |-
+print "\n-- Fibonacci --"
+mut n = input: int, "How many fibonacci numbers? "
+mut a: int = 0
+mut b: int = 1
+mut count: int = 0
+
+while count < n {
+    print a
+    mut temp: int = a + b
+    a = b
+    b = temp
+    count += 1
+}

@@ -6,6 +6,6 @@ from zonc.location_file import Span
 class Diagnostic:
     error_definition: ErrorDefinition
     args: dict[str, str] | None
-    span_code: Span
-    span_error: tuple[Span, str | None]
+    span_code: list[Span]
+    span_errors: list[tuple[Span, str] | None]
     name_file: str

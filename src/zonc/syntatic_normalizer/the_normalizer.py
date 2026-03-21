@@ -69,8 +69,8 @@ class TheNormalizer:
                                 ErrorCode.E1001,
                                 { "mode_tr" : "semicolons",
                                   "used_tr" : "newline" },
-                                span,
-                                (span, "unexpected newline, this file uses semicolons as statement terminators")  
+                                [span],
+                                [(span, "unexpected newline, this file uses semicolons as statement terminators")]
                             )
                             self.position += 1
                             continue
@@ -111,8 +111,8 @@ class TheNormalizer:
                     self.diag.emit(
                         ErrorCode.E1002,
                         None,
-                        span,
-                        (span, "`;` is not valid here, no statement was opened before this")    
+                        [span],
+                        [(span, "`;` is not valid here, no statement was opened before this")]
                     )
                 
                 elif verified and not semicolon_mode:
@@ -120,8 +120,8 @@ class TheNormalizer:
                         ErrorCode.E1001,
                         { "mode_tr" : "newlines",
                           "used_tr" : "semicolon" },
-                        span,
-                        (span, "unexpected `;`, this file uses newlines as statement terminators")
+                        [span],
+                        [(span, "unexpected `;`, this file uses newlines as statement terminators")]
                     )
                 
                 else:
